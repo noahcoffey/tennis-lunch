@@ -473,12 +473,17 @@ function SummaryTab({ orders }) {
   );
 }
 
+function byLastName(a, b) {
+  const last = n => { const parts = n.name.trim().split(/\s+/); return parts[parts.length - 1].toLowerCase(); };
+  return last(a).localeCompare(last(b));
+}
+
 function HandOutTab({ orders, checked, setChecked }) {
   const toggle = id => setChecked(p => ({...p, [id]: !p[id]}));
   const doneCount = Object.values(checked).filter(Boolean).length;
   const pct = orders.length ? Math.round(doneCount/orders.length*100) : 0;
-  const remaining = orders.filter(o => !checked[o.id]);
-  const done = orders.filter(o => checked[o.id]);
+  const remaining = orders.filter(o => !checked[o.id]).sort(byLastName);
+  const done = orders.filter(o => checked[o.id]).sort(byLastName);
 
   return (
     <div className="space-y-3">
@@ -510,7 +515,7 @@ function HandOutTab({ orders, checked, setChecked }) {
                 <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 hover:border-green-400 transition-colors" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-gray-900">{o.name}</p>
-                  <p className="text-xs text-gray-400">{o.item}{o.sauce ? ` \u00b7 ${o.sauce}` : ""}</p>
+                  <p className="text-sm text-gray-500">{o.item}{o.sauce ? ` \u00b7 ${o.sauce}` : ""}</p>
                 </div>
                 {o.isAdHoc && <span className="text-xs bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full font-semibold flex-shrink-0">extra</span>}
               </div>
@@ -534,7 +539,7 @@ function HandOutTab({ orders, checked, setChecked }) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-400 line-through truncate">{o.name}</p>
-                    <p className="text-xs text-gray-300 truncate">{o.item}{o.sauce ? ` \u00b7 ${o.sauce}` : ""}</p>
+                    <p className="text-sm text-gray-300 truncate">{o.item}{o.sauce ? ` \u00b7 ${o.sauce}` : ""}</p>
                   </div>
                 </div>
               ))}
