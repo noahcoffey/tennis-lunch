@@ -292,7 +292,12 @@ function ConfigTab({ game, roster, onToggle, onSetAll, onAddAdHoc, onDelAdHoc })
   const [count, setCount] = useState(1);
 
   const attending = roster.filter(r => game.attendees.includes(r.id));
-  const filtered  = roster.filter(r => r.name.toLowerCase().includes(search.toLowerCase()));
+  const filtered  = roster.filter(r => {
+    const name = r.name.toLowerCase();
+    const terms = search.toLowerCase().split(",").map(s => s.trim()).filter(Boolean);
+    if (terms.length === 0) return true;
+    return terms.some(term => name.includes(term));
+  });
 
   const submitAdHoc = () => {
     if (!label.trim()) return;
